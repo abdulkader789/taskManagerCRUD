@@ -10,10 +10,15 @@ let tempName
 
 const showTask = async () => {
   try {
-    const {
-      data: { task },
-    } = await axios.get(`/api/v1/tasks/${id}`)
+
+    const response = await fetch(`/api/v1/tasks/${id}`);
+    const data = await response.json();
+    const { task } = data
     const { _id: taskID, completed, name } = task
+
+    console.log('all the tasks', task);
+
+
 
     taskIDDOM.textContent = taskID
     taskNameDOM.value = name
@@ -35,14 +40,27 @@ editFormDOM.addEventListener('submit', async (e) => {
     const taskName = taskNameDOM.value
     const taskCompleted = taskCompletedDOM.checked
 
-    const {
-      data: { task },
-    } = await axios.patch(`/api/v1/tasks/${id}`, {
-      name: taskName,
-      completed: taskCompleted,
-    })
 
-    const { _id: taskID, completed, name } = task
+    const response = await fetch(`/api/v1/tasks/${id}`, {
+      method: 'PATCH',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: taskName,
+        completed: taskCompleted,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('Error:', response.status, response.statusText);
+      throw new Error('Network response was not ok');
+    }
+
+    const data = await response.json();
+    console.log(data);
+
+    const { _id: taskID, completed, name } = data.task
 
     taskIDDOM.textContent = taskID
     taskNameDOM.value = name

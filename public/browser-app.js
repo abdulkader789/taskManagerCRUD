@@ -7,16 +7,18 @@ const formAlertDOM = document.querySelector('.form-alert')
 const showTasks = async () => {
   loadingDOM.style.visibility = 'visible'
   try {
-    const {
-      data: { tasks },
-    } = await axios.get('/api/v1/tasks')
+    const response = await fetch("/api/v1/tasks");
+    const data = await response.json();
+    const { tasks, nbHits } = data.data
+    console.log('all the tasks', tasks);
+    console.log('total tasks', nbHits)
+
     if (tasks.length < 1) {
 
       tasksDOM.innerHTML = '<h5 class="empty-list">No tasks in your list</h5>'
       loadingDOM.style.visibility = 'hidden'
       return
     }
-    console.log('all the task', tasks)
 
     const allTasks = tasks
       .map((task) => {
@@ -57,7 +59,13 @@ tasksDOM.addEventListener('click', async (e) => {
     loadingDOM.style.visibility = 'visible'
     const id = el.parentElement.dataset.id
     try {
-      await axios.delete(`/api/v1/tasks/${id}`)
+      fetch(`/api/v1/tasks/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(null)
+      })
       showTasks()
     } catch (error) {
       console.log(error)
@@ -73,7 +81,18 @@ formDOM.addEventListener('submit', async (e) => {
   const name = taskInputDOM.value
 
   try {
-    await axios.post('/api/v1/tasks', { name })
+    const response = await fetch('/api/v1/tasks', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name }),
+    });
+
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+
     showTasks()
     taskInputDOM.value = ''
     formAlertDOM.style.display = 'block'
