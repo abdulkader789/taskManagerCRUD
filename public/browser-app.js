@@ -7,7 +7,7 @@ const formAlertDOM = document.querySelector('.form-alert')
 const showTasks = async () => {
   loadingDOM.style.visibility = 'visible'
   try {
-    const response = await fetch("https://task-manager-crud-kappa.vercel.app/api/v1/tasks");
+    const response = await fetch("/api/v1/tasks");
     const data = await response.json();
     const { tasks, nbHits } = data.data
     console.log('all the tasks', tasks);
