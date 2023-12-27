@@ -3,12 +3,14 @@ const app = express();
 const router = require('./routes/tasks');
 const connectDB = require('./db/connect');
 require('dotenv').config();
+const cors = require('cors');
 
 const notFound = require('./middleware/not-found')
 const errorHandlerMiddleware = require('./middleware/errorHandlerMiddleware')
 
 app.use(express.static('./public'));
 app.use(express.json());
+app.use(cors());
 
 app.use('/api/v1/tasks', router)
 
